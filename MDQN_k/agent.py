@@ -94,8 +94,8 @@ class DQNAgent:
             d_image = image.imread(d_image_path)
             y_image = transform.resize(y_image,(198,198),mode='reflect')
             d_image = transform.resize(d_image,(198,198),mode='reflect')
-            images[step,:,:,i-1]=y_image
-            depths[step,:,:,i-1]=d_image
+            images[0,:,:,i-1]=y_image
+            depths[0,:,:,i-1]=d_image
         return images,depths
 
     def memorize(self,state,action,reward,n_state):
