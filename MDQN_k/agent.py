@@ -80,9 +80,9 @@ class DQNAgent:
         return get_action(state)
 
 
-    def get_data(self,episode,steps):
+    def get_data(self,episode,step):
         path = '../dataset'
-        shape=[steps,]
+        shape=[1,]
         shape.extend(input_shape)
         images = np.zeros(shape)
         depths = np.zeros(shape)
