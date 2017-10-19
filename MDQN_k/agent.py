@@ -10,6 +10,8 @@ from collections import deque
 import socket
 #state is define as [Y_image,Depth_image]
 #settings
+debug = True
+
 input_shape=(198,198,8)
 outpur_shape=4
 n_s=[16,32,64,256] #number of filters
@@ -94,6 +96,7 @@ class DQNAgent:
                 d_image = transform.resize(d_image,(198,198),mode='reflect')
                 images[step,:,:,i-1]=y_image
                 depths[step,:,:,i-1]=d_image
+        debug_print('image loading finished.\n')
         return images,depths
 
     def memorize(self,state,action,reward,n_state):
@@ -193,6 +196,8 @@ class DQNAgent:
                 next_state=np.concatenate((y_,d_),axis=0)
                 terminal=False
             self.memorize(state,action[episode-1][step],reward[episode-1][step],next_state,terminal)
+            debug_print('memory of episode %d step %d loaded'%{episode,step+1})
+
 
 def read_dat_file(path):
     f = open(path)
@@ -204,6 +209,9 @@ def read_dat_file(path):
         xi = list(map(int,xi))
         x.append(xi)
     return x
+def debug_print(word):
+    if debug:
+        print(word)
 
 def main():
     pass
