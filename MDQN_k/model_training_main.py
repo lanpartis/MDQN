@@ -26,7 +26,7 @@ def main():
     qagent.save_model(episode)
     if forward:
         epi_file=open('../files/episode.txt','w')
-        epi_file.write(str(episode+1))
+        epi_file.write(str(episode+2))
         epi_file.close()
 
 if __name__ == '__main__':
