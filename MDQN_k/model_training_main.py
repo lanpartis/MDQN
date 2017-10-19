@@ -25,7 +25,7 @@ def main():
     qagent.update_targer_model()
     qagent.save_model(episode)
     if forward:
-        epi_file=open('../files/episode.txt'，'w')
+        epi_file=open('../files/episode.txt','w')
         epi_file.write(str(episode+1))
         epi_file.close()
 
