@@ -178,14 +178,12 @@ class DQNAgent:
 
     def load_memory_of_episode(self,episode):
         #load images rewards actions terminals
-        reward = np.loadtxt(self.reward_file,delimiter=',')
-        action = np.loadtxt(self.action_file,delimiter=',')
-        reward = reward.reshape((episode,-1))
-        action = action.reshape((episode,-1))
+        reward = read_dat_file(self.reward_file)
+        action = read_dat_file(self.action_file)
         # if len(reward.shape) == 1:
         #     steps = reward.shape[0]
         # else:
-        steps = reward.shape[1]
+        steps = len(reward[episode-1])
         for step in range(steps):
             y,d = self.get_data(episode,step+1)
             state = np.concatenate((y,d),axis=0)
@@ -196,6 +194,16 @@ class DQNAgent:
                 terminal=False
             self.memorize(state,action[episode-1,step],reward[episode-1,step],next_state,terminal)
 
+def read_dat_file(path):
+    f = open(path)
+    lines = f.readlines()
+    x = []
+    for i in range(len(lines)):
+        xi = lines[i]
+        xi = xi[:-1].split(',')
+        xi = list(map(int,xi))
+        x.append(xi)
+    return x
 
 def main():
     pass
