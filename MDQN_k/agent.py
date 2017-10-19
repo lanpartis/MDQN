@@ -44,7 +44,7 @@ class DQNAgent:
         self.targer_Y_model = self.build_model()
         self.D_model = self.build_model()
         self.targer_D_model = self.build_model()
-        # self.load_model()
+        # self.load_model(3)
         # self.load_memory()
 
     def build_model(self):
@@ -186,8 +186,9 @@ class DQNAgent:
         #     steps = reward.shape[0]
         # else:
         steps = len(reward[episode-1])
+        debug_print("step:"+str(steps)
         for step in range(steps):
-            y,d = self.get_data(episode,step+1)
+            y,d = self.get_data(episode,step)
             state = np.concatenate((y,d),axis=0)
             terminal=True
             if step < steps-1:
