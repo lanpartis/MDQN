@@ -186,7 +186,7 @@ class DQNAgent:
         #     steps = reward.shape[0]
         # else:
         steps = len(reward[episode-1])
-        debug_print("step:"+str(steps)
+        debug_print("step:"+str(steps))
         for step in range(steps):
             y,d = self.get_data(episode,step)
             state = np.concatenate((y,d),axis=0)
