@@ -192,7 +192,7 @@ class DQNAgent:
                 y_,d_ = self.get_data(episode,step+1)
                 next_state=np.concatenate((y_,d_),axis=0)
                 terminal=False
-            self.memorize(state,action[episode-1,step],reward[episode-1,step],next_state,terminal)
+            self.memorize(state,action[episode-1][step],reward[episode-1][step],next_state,terminal)
 
 def read_dat_file(path):
     f = open(path)
