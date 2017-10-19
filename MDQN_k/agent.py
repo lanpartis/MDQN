@@ -103,7 +103,7 @@ class DQNAgent:
 
     def memory_replay(self):
         batch = min(len(self.memory),self.batch_size)
-        mini_batch = random.sample(self.memory,batch)
+        mini_batch = random.sample(list(self.memory),batch)
         self.train_Y_model(mini_batch)
         self.train_D_model(mini_batch)
 
