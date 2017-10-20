@@ -9,6 +9,7 @@ import thread
 from multiprocessing import Value,Queue
 from naoqi import ALProxy
 import sys
+actiong_dict={1:"wait",2:"look toward human",3:"hello",4:"shake hand",9:"start"}
 
 robotIp = "192.168.1.163"  # The IP and port address on which 'robot_actions.py' is listenting
 port=9559
@@ -103,7 +104,7 @@ def main():
 	for step in range(2,t_step+2):
 		c, addr = s2.accept()
 		data = c.recv(1024);
-		print time.strftime('%Y/%m/%d-%H:%M:%S',time.localtime(time.time()))," recieve action ",str(data)
+		print time.strftime('%Y/%m/%d-%H:%M:%S',time.localtime(time.time()))," recieve action ",actiong_dict[int(data)]
 
 		num2= Value('d', 0.0)
 		r=str(0)

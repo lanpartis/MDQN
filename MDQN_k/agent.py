@@ -47,7 +47,7 @@ class DQNAgent:
         # self.load_model(3)
         # self.load_memory()
 
-    def __init__(self,episode):
+    def __init__(self,episode=0):
         self.Y_model = self.build_model()
         self.targer_Y_model = self.build_model()
         self.D_model = self.build_model()

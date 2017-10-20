@@ -6,6 +6,7 @@ import time
 t_steps = 40
 host ='localhost'
 port=12375
+actiong_dict={1:"wait",2:"look toward human",3:"hello",4:"shake hand",9:"start"}
 
 memory_path='memory/'
 reward_file=memory_path+'reward.dat'
@@ -17,7 +18,7 @@ def send_action(action):
     s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     s.connect((host,port))
     s.send(str(action).encode())
-    print(time.strftime('%Y/%m/%d-%H:%M:%S',time.localtime(time.time())),' send action: ',action)
+    print(time.strftime('%Y/%m/%d-%H:%M:%S',time.localtime(time.time())),' send action: ',actiong_dict[int(action)])
     data = s.recv(1024).decode()
     print(time.strftime('%Y/%m/%d-%H:%M:%S',time.localtime(time.time())),' recieve reward: ',data)
     s.close()
