@@ -12,7 +12,7 @@ from agent import DQNAgent
 forward = True
 def main():
     epi_file=open('../files/episode.txt')
-    episode = epi_file.read(1)
+    episode = epi_file.readline()
     epi_file.close()
     episode = int(episode)-1
     qagent = DQNAgent()
@@ -24,6 +24,7 @@ def main():
             qagent.update_targer_model()
     qagent.update_targer_model()
     qagent.save_model(episode)
+    print("Training finished")
     if forward:
         epi_file=open('../files/episode.txt','w')
         epi_file.write(str(episode+2))
