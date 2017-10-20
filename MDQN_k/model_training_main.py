@@ -31,6 +31,11 @@ def main():
         epi_file.close()
 
 if __name__ == '__main__':
-    #select what to train
     #set memory path
-    main()
+    for i in range(14):
+        epi_file=open('../files/episode.txt')
+        episode = epi_file.readline()
+        epi_file.close()
+        if int(episode)>15:
+            break;
+        main()
