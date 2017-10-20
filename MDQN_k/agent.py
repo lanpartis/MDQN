@@ -138,7 +138,7 @@ class DQNAgent:
             update_input[i]=state[0]
             update_target[i] = target
 
-        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=5)
+        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1)
 
     def train_D_model(self,mini_batch):
         batch_size = len(mini_batch)
@@ -164,7 +164,7 @@ class DQNAgent:
             update_input[i]=state[1]
             update_target[i] = target
 
-        self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=5)
+        self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1)
 
     def load_model(self,episode):
         if episode==0:
