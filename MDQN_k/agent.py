@@ -21,7 +21,7 @@ p_s=2 #pool_size,pool_strides
 r_len=8#recording times per second 8
 
 class DQNAgent:
-    Y_model_path='models/ymodel'#+episode.h
+    Y_model_path='models/ymodel'
     D_model_path='models/dmodel'
     memory_path='memory/'
     reward_file=memory_path+'reward.dat'
@@ -47,6 +47,13 @@ class DQNAgent:
         # self.load_model(3)
         # self.load_memory()
 
+    def __init__(self,episode):
+        self.Y_model = self.build_model()
+        self.targer_Y_model = self.build_model()
+        self.D_model = self.build_model()
+        self.targer_D_model = self.build_model()
+        self.load_model(episode)
+
     def build_model(self):
         model = Sequential()
         model.add(Conv2D(filters=n_s[0],kernel_size=(fil_size[0],fil_size[0]),strides=(st[0],st[0]),padding='valid',input_shape=input_shape,activation='relu'))
@@ -69,7 +76,7 @@ class DQNAgent:
         '''get action without epsilon greedy'''
         res1 = self.Y_model.predict(state[:1])
         res2 = self.D_model.predict(state[1:])
-        q = res1 + res2
+        q = res1 #+ res2
         return np.argmax(q[0])+1
 
     def e_get_action(self,state):

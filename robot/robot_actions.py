@@ -111,7 +111,7 @@ def shake_hand(step):
 	# 	tts.say("Nice to meet you")
 	# 	thread.start_new_thread(touch_sensor,(str(2),))
 	# 	motion.setAngles(names3,angles2,0.4)
-	# 	time.sleep(2)
+	time.sleep(2)
 	motion.setAngles(names2,angles,0.4)
 	return str(r)
 

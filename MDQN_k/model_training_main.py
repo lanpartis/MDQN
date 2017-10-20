@@ -18,10 +18,11 @@ def main():
     qagent = DQNAgent()
     qagent.load_model(episode-1)
     qagent.load_memory_of_episode(episode)
-    for i in range(0,len(qagent.memory),qagent.batch_size):
-        qagent.memory_replay()
-        if i%10==0:
-            qagent.update_targer_model()
+    for k in range(50):
+        for j in range(10):
+            for i in range(0,len(qagent.memory),qagent.batch_size):
+                qagent.memory_replay()
+        qagent.update_targer_model()
     qagent.update_targer_model()
     qagent.save_model(episode)
     print("Training finished")

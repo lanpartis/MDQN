@@ -10,12 +10,12 @@ from multiprocessing import Value,Queue
 from naoqi import ALProxy
 import sys
 
-robotIp = "192.168.1.210"  # The IP and port address on which 'robot_actions.py' is listenting
+robotIp = "192.168.1.163"  # The IP and port address on which 'robot_actions.py' is listenting
 port=9559
 if len(sys.argv) > 1 and sys.argv[1]:
 	robotIp=str(sys.argv[1])
 
-t_step=20
+t_step=40
 camProxy = ALProxy("ALVideoDevice", robotIp, port)
 resolution = 1    # VGA
 colorSpace = 0   # Y channel
@@ -45,13 +45,13 @@ def cam(step,num):
 	"""
 	First get an image from Nao, then show it on the screen with PIL.
 	"""
-	e=open('files/episode.txt','rb')
-	ep=e.read()
+	e=open('../files/episode.txt','rb')
+	ep=e.readline()
 	ep = str(int(ep))
 	e.close()
 
-	save_path1='dataset/RGB/ep'+str(ep)+'/'
-	save_path2='dataset/Depth/ep'+str(ep)+'/'
+	save_path1='../dataset/RGB/ep'+str(ep)+'/'
+	save_path2='../dataset/Depth/ep'+str(ep)+'/'
 	if not os.path.exists(save_path1):
 		os.makedirs(save_path1)
 	if not os.path.exists(save_path2):
