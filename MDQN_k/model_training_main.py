@@ -36,7 +36,7 @@ if __name__ == '__main__':
         epi_file=open('../files/episode.txt')
         episode = epi_file.readline()
         epi_file.close()
-        print("episode %d start"%int(episode))
+        print("episode %d start"%int(episode-1))
         if int(episode)>15:
             break;
         main()
