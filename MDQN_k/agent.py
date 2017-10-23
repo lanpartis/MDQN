@@ -125,7 +125,7 @@ class DQNAgent:
         for i in range(batch_size):
             state,action,reward,n_state,terminal = mini_batch[i]
             target = self.Y_model.predict(state[:1])[0]
-            action = int(action-1)
+            action = int(action)-1
             # target = np.zeros(self.action_size)
             if terminal:
                 target[action] = reward
@@ -150,7 +150,7 @@ class DQNAgent:
         update_target = np.zeros((batch_size, self.action_size))
         for i in range(batch_size):
             state,action,reward,n_state,terminal = mini_batch[i]
-            action = int(action-1)
+            action = int(action)-1
             target = self.D_model.predict(state[1:])[0]
             # target = np.zeros(self.action_size)
 
