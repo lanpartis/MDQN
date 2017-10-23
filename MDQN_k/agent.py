@@ -77,7 +77,9 @@ class DQNAgent:
         res1 = self.Y_model.predict(state[:1])
         res2 = self.D_model.predict(state[1:])
         q = res1 #+ res2
-        return np.argmax(q[0])+1
+        q=q[0]
+        debug_print("wait:%f look toward:%f hello:%f shake hand: %f"%(q[0],q[1],q[2],q[3]))
+        return np.argmax(q)+1
 
     def e_get_action(self,state):
         if self.epsilon > self.epsilon_final:
@@ -202,7 +204,14 @@ class DQNAgent:
                 y_,d_ = self.get_data(episode,step+1)
                 next_state=np.concatenate((y_,d_),axis=0)
                 terminal=False
-            self.memorize(state,action[episode-1][step],reward[episode-1][step],next_state,terminal)
+            r = reward[episode-1][step]
+            if(r>3):
+                r = 1
+            else if (r<0):
+                r = -1
+            else:
+                r = 0
+            self.memorize(state,action[episode-1][step],r,next_state,terminal)
             debug_print('memory of episode %d step %d loaded'%(episode,step+1))
 
 

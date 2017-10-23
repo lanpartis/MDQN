@@ -34,7 +34,7 @@ def main():
     data = 'x'
     while(data!='9'):
         data = send_action(9)
-    ys,ds=qagent.get_data(episode,1)
+    ys,ds=qagent.get_data(episode,0)
     state = np.concatenate((ys,ds),axis=0)
     actions=[]
     rewards=[]
