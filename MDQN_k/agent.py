@@ -207,7 +207,7 @@ class DQNAgent:
             r = reward[episode-1][step]
             if(r>3):
                 r = 1
-            else if (r<0):
+            elif (r<0):
                 r = -1
             else:
                 r = 0
