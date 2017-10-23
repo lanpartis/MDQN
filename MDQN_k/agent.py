@@ -1,7 +1,6 @@
 from keras.models import Sequential
 from keras.layers import Input,Dense,MaxPooling2D,Flatten
 from keras.layers.convolutional import Conv2D
-from keras.initializers import RandomNormal
 import numpy as np
 import matplotlib.image as image
 import random
@@ -57,15 +56,15 @@ class DQNAgent:
 
     def build_model(self):
         model = Sequential()
-        model.add(Conv2D(filters=n_s[0],kernel_size=(fil_size[0],fil_size[0]),strides=(st[0],st[0]),padding='valid',input_shape=input_shape,kernel_initializer= RandomNormal(0.0,0.05),activation='relu'))
+        model.add(Conv2D(filters=n_s[0],kernel_size=(fil_size[0],fil_size[0]),strides=(st[0],st[0]),padding='valid',input_shape=input_shape,activation='relu'))
         model.add(MaxPooling2D(pool_size=(p_s,p_s),strides=(p_s,p_s),padding='same'))
-        model.add(Conv2D(filters=n_s[1],kernel_size=(fil_size[1],fil_size[1]),strides=(st[1],st[1]),kernel_initializer= RandomNormal(0.0,0.05),padding='valid',activation='relu'))
+        model.add(Conv2D(filters=n_s[1],kernel_size=(fil_size[1],fil_size[1]),strides=(st[1],st[1]),padding='valid',activation='relu'))
         model.add(MaxPooling2D(pool_size=(p_s,p_s),strides=(p_s,p_s),padding='same'))
-        model.add(Conv2D(filters=n_s[2],kernel_size=(fil_size[1],fil_size[1]),strides=(st[1],st[1]),kernel_initializer= RandomNormal(0.0,0.05),padding='valid',activation='relu'))
+        model.add(Conv2D(filters=n_s[2],kernel_size=(fil_size[1],fil_size[1]),strides=(st[1],st[1]),padding='valid',activation='relu'))
         model.add(MaxPooling2D(pool_size=(p_s,p_s),strides=(p_s,p_s),padding='same'))
         model.add(Flatten())
-        model.add(Dense(n_s[3],activation='relu',kernel_initializer= RandomNormal(0.0,0.05)))
-        model.add(Dense(outpur_shape,kernel_initializer= RandomNormal(0.0,0.05)))
+        model.add(Dense(n_s[3],activation='relu'))
+        model.add(Dense(outpur_shape))
         model.compile(loss='mse',optimizer='rmsprop')
         return model
 
