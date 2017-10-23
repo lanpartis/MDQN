@@ -69,8 +69,8 @@ class DQNAgent:
         return model
 
     def update_targer_model(self):
-        self.Y_model.set = self.targer_Y_model
-        self.D_model = self.targer_D_model
+        self.targer_Y_model.set_weight(self.Y_model.get_weights())
+        self.targer_D_model.set_weight(self.D_model.get_weights())
 
     def get_action(self,state):
         '''get action without epsilon greedy'''
