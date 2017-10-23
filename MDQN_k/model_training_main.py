@@ -17,7 +17,7 @@ def main():
     episode = int(episode)-1
     qagent = DQNAgent(episode-1)
     qagent.load_memory_of_episode(episode)
-    for k in range(5):
+    for k in range(2):
         for j in range(2):
             for i in range(0,len(qagent.memory),qagent.batch_size):
                 qagent.memory_replay()
