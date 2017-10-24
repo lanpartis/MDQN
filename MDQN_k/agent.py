@@ -114,7 +114,8 @@ class DQNAgent:
         batch = min(len(self.memory),self.batch_size)
         mini_batch = random.sample(list(self.memory),batch)
         qy=self.train_Y_model(mini_batch)
-        qd=self.train_D_model(mini_batch)
+        # qd=self.train_D_model(mini_batch)
+        qd=0
         return qy,qd
 
     def train_Y_model(self,mini_batch):
@@ -142,7 +143,7 @@ class DQNAgent:
             update_input[i]=state[0]
             update_target[i] = target
 
-        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1,verbose=0)
+        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1,verbose=1)
         return np.mean(update_target)
 
     def train_D_model(self,mini_batch):
@@ -169,7 +170,7 @@ class DQNAgent:
             update_input[i]=state[1]
             update_target[i] = target
 
-        self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1,verbose=0)
+        self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1,verbose=1)
         return np.mean(update_target)
 
 
@@ -210,12 +211,12 @@ class DQNAgent:
                 next_state=np.concatenate((y_,d_),axis=0)
                 terminal=False
             r = reward[episode-1][step]
-            if(r>3):
-                r = 1
-            elif (r<0):
-                r = -0.1
-            else:
-                r = 0
+            # if(r>3):
+            #     r = 1
+            # elif (r<0):
+            #     r = -0.1
+            # else:
+            #     r = 0
             self.memorize(state,action[episode-1][step],r,next_state,terminal)
             debug_print('memory of episode %d step %d loaded'%(episode,step+1))
 
