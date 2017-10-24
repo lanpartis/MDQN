@@ -10,7 +10,7 @@ from collections import deque
 import socket
 #state is define as [Y_image,Depth_image]
 #settings
-debug = True
+debug = False
 
 input_shape=(198,198,8)
 outpur_shape=4
@@ -113,10 +113,12 @@ class DQNAgent:
     def memory_replay(self):
         batch = min(len(self.memory),self.batch_size)
         mini_batch = random.sample(list(self.memory),batch)
-        self.train_Y_model(mini_batch)
-        self.train_D_model(mini_batch)
+        qy=self.train_Y_model(mini_batch)
+        qd=self.train_D_model(mini_batch)
+        return qy,qd
 
     def train_Y_model(self,mini_batch):
+
         batch_size = len(mini_batch)
         shape=[batch_size,]
         shape.extend(input_shape)
@@ -141,6 +143,7 @@ class DQNAgent:
             update_target[i] = target
 
         self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1)
+        return np.mean(update_target)
 
     def train_D_model(self,mini_batch):
         batch_size = len(mini_batch)
@@ -167,6 +170,8 @@ class DQNAgent:
             update_target[i] = target
 
         self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1)
+        return np.mean(update_target)
+
 
     def load_model(self,episode):
         if episode==0:
@@ -213,6 +218,8 @@ class DQNAgent:
                 r = 0
             self.memorize(state,action[episode-1][step],r,next_state,terminal)
             debug_print('memory of episode %d step %d loaded'%(episode,step+1))
+
+
 
 
 def read_dat_file(path):

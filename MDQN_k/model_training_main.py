@@ -1,4 +1,6 @@
 from agent import DQNAgent
+import numpy as np
+import time
 #memory structure
 #___dataset
 # |   |_Depth
@@ -17,12 +19,21 @@ def main():
     episode = int(episode)-1
     qagent = DQNAgent(episode-1)
     qagent.load_memory_of_episode(episode)
+    qys=[]
+    qds=[]
     for k in range(5):
         for j in range(5):
             for i in range(0,len(qagent.memory),qagent.batch_size):
-                qagent.memory_replay()
+                qy,qd=qagent.memory_replay()
+                qys.add(qy)
+                qds.add(qd)
         qagent.update_targer_model()
     qagent.save_model(episode)
+    res = time.strftime('%Y/%m/%d-%H:%M:%S',time.localtime(time.time()))+"Average of episode: %d Q_y: %f Q_d: %f"%(episode,np.mean(qys),np.mean(qds))
+    epi_file=open('../files/avg_Q.txt','a')
+    epi_file.write(res)
+    epi_file.close()
+
     if forward:
         epi_file=open('../files/episode.txt','w')
         epi_file.write(str(episode+2))
