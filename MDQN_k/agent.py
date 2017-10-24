@@ -227,6 +227,7 @@ def read_dat_file(path):
     f = open(path)
     lines = f.readlines()
     x = []
+    f.close()
     for i in range(len(lines)):
         xi = lines[i]
         xi = xi[:-1].split(',')
