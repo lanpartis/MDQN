@@ -221,8 +221,6 @@ class DQNAgent:
             debug_print('memory of episode %d step %d loaded'%(episode,step+1))
 
 
-
-
 def read_dat_file(path):
     f = open(path)
     lines = f.readlines()
