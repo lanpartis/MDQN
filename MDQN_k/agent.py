@@ -10,7 +10,7 @@ from collections import deque
 import socket
 #state is define as [Y_image,Depth_image]
 #settings
-debug = False
+debug = True
 
 input_shape=(198,198,8)
 outpur_shape=4
@@ -78,7 +78,7 @@ class DQNAgent:
         res2 = self.D_model.predict(state[1:])
         q = res1 #+ res2
         q=q[0]
-        debug_print("wait:%f look toward:%f hello:%f shake hand: %f"%(q[0],q[1],q[2],q[3]))
+        print("wait:%f look toward:%f hello:%f shake hand: %f"%(q[0],q[1],q[2],q[3]))
         return np.argmax(q)+1
 
     def e_get_action(self,state):
@@ -142,7 +142,7 @@ class DQNAgent:
             update_input[i]=state[0]
             update_target[i] = target
 
-        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1)
+        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1,verbose=0)
         return np.mean(update_target)
 
     def train_D_model(self,mini_batch):
@@ -169,7 +169,7 @@ class DQNAgent:
             update_input[i]=state[1]
             update_target[i] = target
 
-        self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1)
+        self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1,verbose=0)
         return np.mean(update_target)
 
 
