@@ -209,6 +209,7 @@ class DQNAgent:
 def read_dat_file(path):
     f = open(path)
     lines = f.readlines()
+    f.close()
     x = []
     for i in range(len(lines)):
         xi = lines[i]
