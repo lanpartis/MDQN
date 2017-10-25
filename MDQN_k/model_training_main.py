@@ -22,12 +22,12 @@ def main():
     qys=[]
     qds=[]
     for k in range(2):
-        for j in range(2):
+        # for j in range(2):
             # for i in range(0,len(qagent.memory),qagent.batch_size):
-            qy,qd=qagent.memory_replay()
-            qagent.update_targer_model()
-            qys.append(qy)
-            qds.append(qd)
+        qy,qd=qagent.memory_replay()
+        qagent.update_targer_model()
+        qys.append(qy)
+        qds.append(qd)
     qagent.save_model(episode)
     res = time.strftime('%Y/%m/%d-%H:%M:%S',time.localtime(time.time()))+"Average of episode: %d Q_y: %f Q_d: %f"%(episode,np.mean(qys),np.mean(qds))
     epi_file=open('../files/avg_Q.txt','a')

@@ -125,7 +125,7 @@ class DQNAgent:
         shape.extend(input_shape)
         update_input = np.zeros(shape)
         update_target = np.zeros((batch_size, self.action_size))
-        for i in range(batch_size):
+        for i in range(len(memory)):
             state,action,reward,n_state,terminal = memory[i]
             target = self.Y_model.predict(state[:1])[0]
             action = int(action)-1
@@ -143,7 +143,7 @@ class DQNAgent:
             update_input[i]=state[0]
             update_target[i] = target
 
-        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=int(len(memory)/batch_size),verbose=1)
+        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=10,verbose=1,shuffle=True)
         return np.mean(update_target)
 
     def train_D_model(self,memory):
@@ -152,7 +152,7 @@ class DQNAgent:
         shape.extend(input_shape)
         update_input = np.zeros(shape)
         update_target = np.zeros((batch_size, self.action_size))
-        for i in range(batch_size):
+        for i in range(len(memory)):
             state,action,reward,n_state,terminal = memory[i]
             action = int(action)-1
             target = self.D_model.predict(state[1:])[0]
@@ -170,7 +170,7 @@ class DQNAgent:
             update_input[i]=state[1]
             update_target[i] = target
 
-        self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=int(len(memory)/batch_size),verbose=1)
+        self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=10,verbose=1,shuffle=True)
         return np.mean(update_target)
 
 
