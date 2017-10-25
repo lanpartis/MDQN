@@ -28,8 +28,9 @@ def main():
         host = sys.argv[1]
     epi_file=open('../files/episode.txt')
     episode = epi_file.readline()
+    episode = int(episode)
     epi_file.close()
-    qagent=DQNAgent(14)
+    qagent=DQNAgent(3)
     data = 'x'
     while(data!='9'):
         data = send_action(9)
