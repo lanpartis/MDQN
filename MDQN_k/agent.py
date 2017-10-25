@@ -143,7 +143,7 @@ class DQNAgent:
             update_input[i]=state[0]
             update_target[i] = target
 
-        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=len(memory)/batch_size,verbose=1)
+        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=int(len(memory)/batch_size),verbose=1)
         return np.mean(update_target)
 
     def train_D_model(self,memory):
@@ -170,7 +170,7 @@ class DQNAgent:
             update_input[i]=state[1]
             update_target[i] = target
 
-        self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=len(memory)/batch_size,verbose=1)
+        self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=int(len(memory)/batch_size),verbose=1)
         return np.mean(update_target)
 
 
