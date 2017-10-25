@@ -121,11 +121,12 @@ class DQNAgent:
     def train_Y_model(self,memory):
 
         batch_size = self.batch_size
-        shape=[batch_size,]
+        memsize=len(memory)
+        shape=[memsize,]
         shape.extend(input_shape)
         update_input = np.zeros(shape)
-        update_target = np.zeros((batch_size, self.action_size))
-        for i in range(len(memory)):
+        update_target = np.zeros((memsize, self.action_size))
+        for i in range(memsize):
             state,action,reward,n_state,terminal = memory[i]
             target = self.Y_model.predict(state[:1])[0]
             action = int(action)-1
@@ -148,11 +149,12 @@ class DQNAgent:
 
     def train_D_model(self,memory):
         batch_size = self.batch_size
-        shape=[batch_size,]
+        memsize=len(memory)
+        shape=[memsize,]
         shape.extend(input_shape)
         update_input = np.zeros(shape)
-        update_target = np.zeros((batch_size, self.action_size))
-        for i in range(len(memory)):
+        update_target = np.zeros((memsize, self.action_size))
+        for i in range(memsize):
             state,action,reward,n_state,terminal = memory[i]
             action = int(action)-1
             target = self.D_model.predict(state[1:])[0]
