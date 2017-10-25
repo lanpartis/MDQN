@@ -29,6 +29,7 @@ def main():
     epi_file=open('../files/episode.txt')
     episode = epi_file.readline()
     epi_file.close()
+    episode = int(episode)
     qagent=DQNAgent(3)
     data = 'x'
     while(data!='9'):

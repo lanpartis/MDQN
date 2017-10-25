@@ -199,10 +199,10 @@ class DQNAgent:
             if r>3:
                 r=1
             elif r<0:
-                r=-1
+                r=-0.1
             else:
                 r=0
-            self.memorize(state,action[episode-1][step],reward[episode-1][step],next_state,terminal)
+            self.memorize(state,action[episode-1][step],r,next_state,terminal)
             debug_print('memory of episode %d step %d loaded'%(episode,step+1))
 
 
