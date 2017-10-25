@@ -195,6 +195,7 @@ class DQNAgent:
 
     def load_memory_of_episode(self,episode):
         #load images rewards actions terminals
+        self.memory = deque(maxlen=replay_memory)
         reward = read_dat_file(self.reward_file)
         action = read_dat_file(self.action_file)
         # if len(reward.shape) == 1:
