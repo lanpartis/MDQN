@@ -144,7 +144,7 @@ class DQNAgent:
             update_input[i]=state[0]
             update_target[i] = target
 
-        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=10,verbose=1,shuffle=True)
+        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1,verbose=1,shuffle=True)
         return np.mean(update_target)
 
     def train_D_model(self,memory):
