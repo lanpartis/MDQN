@@ -179,7 +179,7 @@ class DQNAgent:
                 target[action] = reward
             else:
 
-                q_2 = torch.max(self.targer_Y_model.forward(nstate).cuda().data)
+                q_2 = torch.max(self.targer_Y_model.forward(nstate)).cuda().data.squeeze()
                 target[action] = reward + self.discount_factor*q_2
             if self.clip_delta:
                 if target[action]> self.clip_delta:
