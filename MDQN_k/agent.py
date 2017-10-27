@@ -83,11 +83,14 @@ class DQNAgent:
             self.load_model(episode)
         self.Y_model.double()
         self.D_model.double()
-        if cuda:
-            self.Y_model.cuda()
-            self.D_model.cuda()
+
         self.targer_Y_model.double()
         self.targer_D_model.double()
+        if cuda:
+            self.Y_model.cuda()
+            self.targer_Y_model.cuda()
+            self.D_model.cuda()
+            self.targer_D_model.cuda()
         self.Y_optimizer = torch.optim.RMSprop(self.Y_model.parameters(),1e-4)
         self.D_optimizer = torch.optim.RMSprop(self.D_model.parameters(),1e-4)
 
@@ -179,7 +182,7 @@ class DQNAgent:
                 target[action] = reward
             else:
                 q_2 =self.targer_Y_model.forward(nstate)
-                q_2 = torch.max(q_2).cpu().data.squeeze()
+                q_2 = torch.max(q_2).cpu().data.numpy()
                 target[action] = reward + self.discount_factor*q_2
             if self.clip_delta:
                 if target[action]> self.clip_delta:
