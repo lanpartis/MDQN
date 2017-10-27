@@ -246,14 +246,19 @@ class DQNAgent:
         if episode==0:
             return
         episode=str(episode)
-        self.Y_model=torch.load(self.Y_model_path+episode+'.pkl')
-        self.D_model=torch.load(self.D_model_path+episode+'.pkl')
+        if cuda:
+            self.Y_model=torch.load(self.Y_model_path+episode+'_gpu.pkl')
+            # self.D_model=torch.load(self.D_model_path+episode+'.pkl')
+        else:
+            self.Y_model=torch.load(self.Y_model_path+episode+'.pkl')
         self.update_targer_model()
 
     def save_model(self,episode):
         episode=str(episode)
-        torch.save(self.Y_model,self.Y_model_path+episode+'.pkl')
-        torch.save(self.D_model,self.D_model_path+episode+'.pkl')
+        if cuda:
+            torch.save(self.Y_model,self.Y_model_path+episode+'_gpu.pkl')
+            torch.save(self.D_model,self.D_model_path+episode+'_gpu.pkl')
+        torch.save(self.Y_model.cpu(),self.Y_model_path+episode+'.pkl')
 
     def save_memory(self):
         pass
