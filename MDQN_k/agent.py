@@ -76,31 +76,30 @@ class DQNAgent:
     def __init__(self,episode=0):
         if episode==0:
             self.Y_model = self.build_model()
-            self.targer_Y_model = self.build_model()
+            self.target_Y_model = self.build_model()
             self.D_model = self.build_model()
-            self.targer_D_model = self.build_model()
+            self.target_D_model = self.build_model()
         else:
             self.load_model(episode)
         self.Y_model.double()
-        self.D_model.double()
-
-        self.targer_Y_model.double()
-        self.targer_D_model.double()
+        # self.D_model.double()
+        self.target_Y_model.double()
+        # self.target_D_model.double()
         if cuda:
             self.Y_model.cuda()
-            self.targer_Y_model.cuda()
-            self.D_model.cuda()
-            self.targer_D_model.cuda()
+            self.target_Y_model.cuda()
+            # self.D_model.cuda()
+            # self.target_D_model.cuda()
         self.Y_optimizer = torch.optim.RMSprop(self.Y_model.parameters(),1e-4)
-        self.D_optimizer = torch.optim.RMSprop(self.D_model.parameters(),1e-4)
+        # self.D_optimizer = torch.optim.RMSprop(self.D_model.parameters(),1e-4)
 
 
     def build_model(self):
         return DQN()
 
-    def update_targer_model(self):
-        self.targer_Y_model.load_state_dict(self.Y_model.state_dict())
-        self.targer_D_model.load_state_dict(self.D_model.state_dict())
+    def update_target_model(self):
+        self.target_Y_model.load_state_dict(self.Y_model.state_dict())
+        # self.target_D_model.load_state_dict(self.D_model.state_dict())
     def get_action(self,state):
         '''get action without epsilon greedy'''
         if cuda:
@@ -110,7 +109,7 @@ class DQNAgent:
             ystate = Variable(torch.from_numpy(state[:1]))
             dstate = Variable(torch.from_numpy(state[1:]))
         res1 = self.Y_model.forward(ystate)
-        res2 = self.D_model.forward(dstate)
+        # res2 = self.D_model.forward(dstate)
         q = res1 #+ res2
         if cuda:
             q=q[0].cpu().data.numpy()
@@ -181,7 +180,7 @@ class DQNAgent:
             if terminal:
                 target[action] = reward
             else:
-                q_2 =self.targer_Y_model.forward(nstate)
+                q_2 =self.target_Y_model.forward(nstate)
                 q_2 = torch.max(q_2).cpu().data.numpy()
                 target[action] = reward + self.discount_factor*q_2
             if self.clip_delta:
@@ -223,7 +222,7 @@ class DQNAgent:
                 target[action] = reward
             else:
                 nstate = Variable(torch.from_numpy(n_state[1:]))
-                target[action] = reward + self.discount_factor*torch.max(self.targer_D_model.forward(nstate).data)
+                target[action] = reward + self.discount_factor*torch.max(self.target_D_model.forward(nstate).data)
             if self.clip_delta:
                 if target[action]> self.clip_delta:
                     target[action] = self.clip_delta
@@ -248,10 +247,12 @@ class DQNAgent:
         episode=str(episode)
         if cuda:
             self.Y_model=torch.load(self.Y_model_path+episode+'_gpu.pkl')
+            self.target_Y_model=torch.load(self.Y_model_path+episode+'_gpu.pkl')
             # self.D_model=torch.load(self.D_model_path+episode+'.pkl')
         else:
             self.Y_model=torch.load(self.Y_model_path+episode+'.pkl')
-        self.update_targer_model()
+            self.target_Y_model=torch.load(self.Y_model_path+episode+'.pkl')
+        self.update_target_model()
 
     def save_model(self,episode):
         episode=str(episode)

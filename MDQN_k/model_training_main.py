@@ -21,8 +21,8 @@ def main():
     qagent.load_memory_of_episode(episode)
     qys=[]
     qds=[]
-    for k in range(5):
-        for j in range(2):
+    for k in range(50):
+        for j in range(10):
             # for i in range(0,len(qagent.memory),qagent.batch_size):
             qy,qd=qagent.memory_replay()
         qagent.update_targer_model()
