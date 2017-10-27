@@ -20,7 +20,7 @@ fsl=5#final side length
 st=[3,1] #strides
 p_s=2 #pool_size,pool_strides
 r_len=8#recording times per second 8
-
+cuda=torch.cuda.is_available():
 loss_func = nn.MSELoss()
 class DQN(nn.Module):
     def __init__(self,):
@@ -72,11 +72,6 @@ class DQNAgent:
     replay_memory = 30000
     memory = deque(maxlen=replay_memory)
     clip_delta = 1
-    def __init__(self):
-        self.Y_model = self.build_model()
-        self.targer_Y_model = self.build_model()
-        self.D_model = self.build_model()
-        self.targer_D_model = self.build_model()
 
     def __init__(self,episode=0):
         if episode==0:
@@ -88,8 +83,9 @@ class DQNAgent:
             self.load_model(episode)
         self.Y_model.double()
         self.D_model.double()
-        self.Y_model.cuda()
-        self.D_model.cuda()
+        if cuda:
+            self.Y_model.cuda()
+            self.D_model.cuda()
         self.targer_Y_model.double()
         self.targer_D_model.double()
         self.Y_optimizer = torch.optim.RMSprop(self.Y_model.parameters(),1e-4)
@@ -104,8 +100,12 @@ class DQNAgent:
         self.targer_D_model.load_state_dict(self.D_model.state_dict())
     def get_action(self,state):
         '''get action without epsilon greedy'''
-        ystate = Variable(torch.from_numpy(state[:1]))
-        dstate = Variable(torch.from_numpy(state[1:]))
+        if cuda:
+            ystate = Variable(torch.from_numpy(state[:1]).cuda())
+            dstate = Variable(torch.from_numpy(state[1:]).cuda())
+        else:
+            ystate = Variable(torch.from_numpy(state[:1]))
+            dstate = Variable(torch.from_numpy(state[1:]))
         res1 = self.Y_model.forward(ystate)
         res2 = self.D_model.forward(dstate)
         q = res1 #+ res2
@@ -163,14 +163,19 @@ class DQNAgent:
         update_target = np.zeros((memsize, self.action_size))
         for i in range(memsize):
             state,action,reward,n_state,terminal = batchMem[i]
-            ystate = Variable(torch.from_numpy(state[:1]))
+            if cuda:
+                ystate = Variable(torch.from_numpy(state[:1]).cuda())
+                nstate = Variable(torch.from_numpy(n_state[:1]).cuda())
+            else:
+                ystate = Variable(torch.from_numpy(state[:1]))
+                nstate = Variable(torch.from_numpy(n_state[:1]))
             target = self.Y_model.forward(ystate).data.numpy()[0]
             action = int(action)-1
             # target = np.zeros(self.action_size)
             if terminal:
                 target[action] = reward
             else:
-                nstate = Variable(torch.from_numpy(n_state[:1]))
+
                 q_2 = torch.max(self.targer_Y_model.forward(nstate).data)
                 target[action] = reward + self.discount_factor*q_2
             if self.clip_delta:
@@ -180,8 +185,12 @@ class DQNAgent:
                     target[action] = -self.clip_delta
             update_input[i]=state[0]
             update_target[i] = target
-        update_input=Variable(torch.from_numpy(update_input))
-        update_target=Variable(torch.from_numpy(update_target))
+        if cuda:
+            update_input=Variable(torch.from_numpy(update_input).cuda())
+            update_target=Variable(torch.from_numpy(update_target).cuda())
+        else:
+            update_input=Variable(torch.from_numpy(update_input))
+            update_target=Variable(torch.from_numpy(update_target))
         prediction=self.Y_model.forward(update_input)
         loss = loss_func(prediction,update_target)
         print(np.mean(loss.data.numpy()))
