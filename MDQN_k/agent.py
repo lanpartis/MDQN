@@ -111,22 +111,23 @@ class DQNAgent:
         self.memory.add(state,action,reward,n_state)
 
     def memory_replay(self):
-        batch = min(len(self.memory),self.batch_size)
-        mini_batch = random.sample(list(self.memory),batch)
-        qy=self.train_Y_model(mini_batch)
+        # batch = min(len(self.memory),self.batch_size)
+        # mini_batch = random.sample(list(self.memory),batch)
+        qy=self.train_Y_model(self.memory)
         # qd=self.train_D_model(mini_batch)
         qd=0
         return qy,qd
 
-    def train_Y_model(self,mini_batch):
+    def train_Y_model(self,memory):
 
-        batch_size = len(mini_batch)
-        shape=[batch_size,]
+        batch_size = self.batch_size
+        memsize=len(memory)
+        shape=[memsize,]
         shape.extend(input_shape)
         update_input = np.zeros(shape)
-        update_target = np.zeros((batch_size, self.action_size))
-        for i in range(batch_size):
-            state,action,reward,n_state,terminal = mini_batch[i]
+        update_target = np.zeros((memsize, self.action_size))
+        for i in range(memsize):
+            state,action,reward,n_state,terminal = memory[i]
             target = self.Y_model.predict(state[:1])[0]
             action = int(action)-1
             # target = np.zeros(self.action_size)
@@ -143,17 +144,18 @@ class DQNAgent:
             update_input[i]=state[0]
             update_target[i] = target
 
-        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1,verbose=1)
+        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=2,verbose=1,shuffle=True)
         return np.mean(update_target)
 
-    def train_D_model(self,mini_batch):
-        batch_size = len(mini_batch)
-        shape=[batch_size,]
+    def train_D_model(self,memory):
+        batch_size = self.batch_size
+        memsize=len(memory)
+        shape=[memsize,]
         shape.extend(input_shape)
         update_input = np.zeros(shape)
-        update_target = np.zeros((batch_size, self.action_size))
-        for i in range(batch_size):
-            state,action,reward,n_state,terminal = mini_batch[i]
+        update_target = np.zeros((memsize, self.action_size))
+        for i in range(memsize):
+            state,action,reward,n_state,terminal = memory[i]
             action = int(action)-1
             target = self.D_model.predict(state[1:])[0]
             # target = np.zeros(self.action_size)
@@ -170,7 +172,7 @@ class DQNAgent:
             update_input[i]=state[1]
             update_target[i] = target
 
-        self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=1,verbose=1)
+        self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=10,verbose=1,shuffle=True)
         return np.mean(update_target)
 
 
@@ -195,6 +197,7 @@ class DQNAgent:
 
     def load_memory_of_episode(self,episode):
         #load images rewards actions terminals
+        self.memory = deque(maxlen=self.replay_memory)
         reward = read_dat_file(self.reward_file)
         action = read_dat_file(self.action_file)
         # if len(reward.shape) == 1:
