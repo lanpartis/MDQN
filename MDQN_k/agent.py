@@ -1,24 +1,57 @@
-from keras.models import Sequential
-from keras.layers import Input,Dense,MaxPooling2D,Flatten
-from keras.layers.convolutional import Conv2D
+import torch
+import torch.nn as nn
+from torch.autograd import Variable
+import torch.nn.functional as F
 import numpy as np
 import matplotlib.image as image
 import random
 from skimage import transform
-from keras.optimizers import RMSprop
 from collections import deque
 import socket
 #state is define as [Y_image,Depth_image]
 #settings
 debug = True
 
-input_shape=(198,198,8)
-outpur_shape=4
+input_shape=(8,198,198)
+output_shape=4
 n_s=[16,32,64,256] #number of filters
 fil_size=[9,5] #filter size
+fsl=5#final side length
 st=[3,1] #strides
 p_s=2 #pool_size,pool_strides
 r_len=8#recording times per second 8
+
+loss_func = nn.MSELoss()
+class DQN(nn.Module):
+    def __init__(self,):
+        super(DQN,self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(r_len,n_s[0],kernel_size=fil_size[0],stride = st[0]),
+            nn.ReLU(),
+            nn.MaxPool2d(p_s,p_s),
+        )
+        self.conv2 =nn.Sequential(
+            nn.Conv2d(n_s[0],n_s[1],kernel_size=fil_size[1],stride = st[1]),
+            nn.ReLU(),
+            nn.MaxPool2d(p_s,p_s),
+        )
+        self.conv3 =nn.Sequential(
+            nn.Conv2d(n_s[1],n_s[2],kernel_size=fil_size[1],stride = st[1]),
+            nn.ReLU(),
+            nn.MaxPool2d(p_s,p_s),
+        )
+        self.L1 = nn.Linear(n_s[2]*fsl*fsl,n_s[3])
+        self.out = nn.Linear(n_s[3],output_shape)
+
+    def forward(self,x):
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = x.view(x.size(0),-1)
+        x = F.relu(self.L1(x))
+        return self.out(x)
+
+
 
 class DQNAgent:
     Y_model_path='models/ymodel'
@@ -44,42 +77,40 @@ class DQNAgent:
         self.targer_Y_model = self.build_model()
         self.D_model = self.build_model()
         self.targer_D_model = self.build_model()
-        # self.load_model(3)
-        # self.load_memory()
 
     def __init__(self,episode=0):
-        self.Y_model = self.build_model()
-        self.targer_Y_model = self.build_model()
-        self.D_model = self.build_model()
-        self.targer_D_model = self.build_model()
-        self.load_model(episode)
+        if episode==0:
+            self.Y_model = self.build_model()
+            self.targer_Y_model = self.build_model()
+            self.D_model = self.build_model()
+            self.targer_D_model = self.build_model()
+        else:
+            self.load_model(episode)
+        self.Y_model.double()
+        self.D_model.double()
+        self.targer_Y_model.double()
+        self.targer_D_model.double()
+        self.Y_optimizer = torch.optim.RMSprop(self.Y_model.parameters(),1e-4)
+        self.D_optimizer = torch.optim.RMSprop(self.D_model.parameters(),1e-4)
+
 
     def build_model(self):
-        model = Sequential()
-        model.add(Conv2D(filters=n_s[0],kernel_size=(fil_size[0],fil_size[0]),strides=(st[0],st[0]),padding='valid',input_shape=input_shape,activation='relu'))
-        model.add(MaxPooling2D(pool_size=(p_s,p_s),strides=(p_s,p_s),padding='same'))
-        model.add(Conv2D(filters=n_s[1],kernel_size=(fil_size[1],fil_size[1]),strides=(st[1],st[1]),padding='valid',activation='relu'))
-        model.add(MaxPooling2D(pool_size=(p_s,p_s),strides=(p_s,p_s),padding='same'))
-        model.add(Conv2D(filters=n_s[2],kernel_size=(fil_size[1],fil_size[1]),strides=(st[1],st[1]),padding='valid',activation='relu'))
-        model.add(MaxPooling2D(pool_size=(p_s,p_s),strides=(p_s,p_s),padding='same'))
-        model.add(Flatten())
-        model.add(Dense(n_s[3],activation='relu'))
-        model.add(Dense(outpur_shape))
-        model.compile(loss='mse',optimizer='rmsprop')
-        return model
+        return DQN()
 
     def update_targer_model(self):
-        self.targer_Y_model.set_weights(self.Y_model.get_weights())
-        self.targer_D_model.set_weights(self.D_model.get_weights())
-
+        self.targer_Y_model.load_state_dict(self.Y_model.state_dict())
+        self.targer_D_model.load_state_dict(self.D_model.state_dict())
     def get_action(self,state):
         '''get action without epsilon greedy'''
-        res1 = self.Y_model.predict(state[:1])
-        res2 = self.D_model.predict(state[1:])
+        ystate = Variable(torch.from_numpy(state[:1]))
+        dstate = Variable(torch.from_numpy(state[1:]))
+        res1 = self.Y_model.forward(ystate)
+        res2 = self.D_model.forward(dstate)
         q = res1 #+ res2
-        q=q[0]
+        q=q[0].data.numpy()
         print("wait:%f look toward:%f hello:%f shake hand: %f"%(q[0],q[1],q[2],q[3]))
-        return np.argmax(q)+1
+        act = np.argmax(q)
+        return act+1
 
     def e_get_action(self,state):
         if self.epsilon > self.epsilon_final:
@@ -103,8 +134,8 @@ class DQNAgent:
             d_image = image.imread(d_image_path)
             y_image = transform.resize(y_image,(198,198),mode='reflect')
             d_image = transform.resize(d_image,(198,198),mode='reflect')
-            images[0,:,:,i-1]=y_image
-            depths[0,:,:,i-1]=d_image
+            images[0,i-1,:,:]=y_image
+            depths[0,i-1,:,:]=d_image
         return images,depths
 
     def memorize(self,state,action,reward,n_state):
@@ -113,28 +144,32 @@ class DQNAgent:
     def memory_replay(self):
         # batch = min(len(self.memory),self.batch_size)
         # mini_batch = random.sample(list(self.memory),batch)
-        qy=self.train_Y_model(self.memory)
+        qy=self.train_Y_model(self.memory)#self.sample_memory())
         # qd=self.train_D_model(mini_batch)
         qd=0
         return qy,qd
 
-    def train_Y_model(self,memory):
+    def sample_memory(self):
+        return random.sample(self.memory,self.batch_size)
 
+    def train_Y_model(self,batchMem):
+        memsize=len(batchMem)
         batch_size = self.batch_size
-        memsize=len(memory)
         shape=[memsize,]
         shape.extend(input_shape)
         update_input = np.zeros(shape)
         update_target = np.zeros((memsize, self.action_size))
         for i in range(memsize):
-            state,action,reward,n_state,terminal = memory[i]
-            target = self.Y_model.predict(state[:1])[0]
+            state,action,reward,n_state,terminal = batchMem[i]
+            ystate = Variable(torch.from_numpy(state[:1]))
+            target = self.Y_model.forward(ystate).data.numpy()[0]
             action = int(action)-1
             # target = np.zeros(self.action_size)
             if terminal:
                 target[action] = reward
             else:
-                q_2 = np.amax(self.targer_Y_model.predict(n_state[:1])[0])
+                nstate = Variable(torch.from_numpy(n_state[:1]))
+                q_2 = torch.max(self.targer_Y_model.forward(nstate).data)
                 target[action] = reward + self.discount_factor*q_2
             if self.clip_delta:
                 if target[action]> self.clip_delta:
@@ -143,27 +178,35 @@ class DQNAgent:
                     target[action] = -self.clip_delta
             update_input[i]=state[0]
             update_target[i] = target
+        update_input=Variable(torch.from_numpy(update_input))
+        update_target=Variable(torch.from_numpy(update_target))
+        prediction=self.Y_model.forward(update_input)
+        loss = loss_func(prediction,update_target)
+        print(np.mean(loss.data.numpy()))
+        self.Y_optimizer.zero_grad()
+        loss.backward()
+        self.Y_optimizer.step()
+        return np.mean(update_target.data.numpy())
 
-        self.Y_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=2,verbose=1,shuffle=True)
-        return np.mean(update_target)
-
-    def train_D_model(self,memory):
+    def train_D_model(self,batchMem):
         batch_size = self.batch_size
-        memsize=len(memory)
+        memsize=len(batchMem)
         shape=[memsize,]
         shape.extend(input_shape)
         update_input = np.zeros(shape)
         update_target = np.zeros((memsize, self.action_size))
         for i in range(memsize):
-            state,action,reward,n_state,terminal = memory[i]
+            state,action,reward,n_state,terminal = batchMem[i]
             action = int(action)-1
-            target = self.D_model.predict(state[1:])[0]
+            dstate = Variable(torch.from_numpy(state[1:]))
+            target = self.D_model.forward(dstate).data.numpy()[0]
             # target = np.zeros(self.action_size)
 
             if terminal:
                 target[action] = reward
             else:
-                target[action] = reward + self.discount_factor*np.amax(self.targer_D_model.predict(n_state[1:])[0])
+                nstate = Variable(torch.from_numpy(n_state[1:]))
+                target[action] = reward + self.discount_factor*torch.max(self.targer_D_model.forward(nstate).data)
             if self.clip_delta:
                 if target[action]> self.clip_delta:
                     target[action] = self.clip_delta
@@ -171,23 +214,29 @@ class DQNAgent:
                     target[action] = -self.clip_delta
             update_input[i]=state[1]
             update_target[i] = target
-
-        self.D_model.fit(update_input,update_target,batch_size=self.batch_size,epochs=10,verbose=1,shuffle=True)
-        return np.mean(update_target)
+        update_input=Variable(torch.from_numpy(update_input))
+        update_target=Variable(torch.from_numpy(update_target))
+        prediction=self.D_model.forward(update_input)
+        loss = loss_func(prediction,update_target)
+        print(np.mean(loss.data.numpy()))
+        self.D_optimizer.zero_grad()
+        loss.backward()
+        self.D_optimizer.step()
+        return np.mean(update_target.data.numpy())
 
 
     def load_model(self,episode):
         if episode==0:
             return
         episode=str(episode)
-        self.Y_model.load_weights(self.Y_model_path+episode+'.h5')
-        self.D_model.load_weights(self.D_model_path+episode+'.h5')
+        self.Y_model=torch.load(self.Y_model_path+episode+'.pkl')
+        self.D_model=torch.load(self.D_model_path+episode+'.pkl')
         self.update_targer_model()
 
     def save_model(self,episode):
         episode=str(episode)
-        self.Y_model.save_weights(self.Y_model_path+episode+'.h5')
-        self.D_model.save_weights(self.D_model_path+episode+'.h5')
+        torch.save(self.Y_model,self.Y_model_path+episode+'.pkl')
+        torch.save(self.D_model,self.D_model_path+episode+'.pkl')
 
     def save_memory(self):
         pass

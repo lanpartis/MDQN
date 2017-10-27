@@ -17,12 +17,12 @@ def main():
     episode = epi_file.readline()
     epi_file.close()
     episode = int(episode)-1
-    qagent = DQNAgent(episode-1)
+    qagent = DQNAgent(0)#episode-1)
     qagent.load_memory_of_episode(episode)
     qys=[]
     qds=[]
-    for k in range(50):
-        for j in range(5):
+    for k in range(5):
+        for j in range(2):
             # for i in range(0,len(qagent.memory),qagent.batch_size):
             qy,qd=qagent.memory_replay()
         qagent.update_targer_model()
