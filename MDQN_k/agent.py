@@ -20,7 +20,7 @@ fsl=5#final side length
 st=[3,1] #strides
 p_s=2 #pool_size,pool_strides
 r_len=8#recording times per second 8
-cuda=torch.cuda.is_available():
+cuda=torch.cuda.is_available()
 loss_func = nn.MSELoss()
 class DQN(nn.Module):
     def __init__(self,):
