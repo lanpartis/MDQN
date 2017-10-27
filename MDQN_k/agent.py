@@ -203,7 +203,7 @@ class DQNAgent:
         self.Y_optimizer.zero_grad()
         loss.backward()
         self.Y_optimizer.step()
-        return np.mean(update_target.data.numpy())
+        return np.mean(update_target.cpu().data.numpy())
 
     def train_D_model(self,batchMem):#todo cuda capablity
         batch_size = self.batch_size
