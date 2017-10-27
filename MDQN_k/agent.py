@@ -88,6 +88,8 @@ class DQNAgent:
             self.load_model(episode)
         self.Y_model.double()
         self.D_model.double()
+        self.Y_model.cuda()
+        self.D_model.cuda()
         self.targer_Y_model.double()
         self.targer_D_model.double()
         self.Y_optimizer = torch.optim.RMSprop(self.Y_model.parameters(),1e-4)
@@ -144,7 +146,7 @@ class DQNAgent:
     def memory_replay(self):
         # batch = min(len(self.memory),self.batch_size)
         # mini_batch = random.sample(list(self.memory),batch)
-        qy=self.train_Y_model(self.memory)#self.sample_memory())
+        qy=self.train_Y_model(self.sample_memory())
         # qd=self.train_D_model(mini_batch)
         qd=0
         return qy,qd
