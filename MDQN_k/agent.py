@@ -109,7 +109,10 @@ class DQNAgent:
         res1 = self.Y_model.forward(ystate)
         res2 = self.D_model.forward(dstate)
         q = res1 #+ res2
-        q=q[0].data.numpy()
+        if cuda:
+            q=q[0].cpu().data.numpy()
+        else:
+            q=q[0].data.numpy()
         print("wait:%f look toward:%f hello:%f shake hand: %f"%(q[0],q[1],q[2],q[3]))
         act = np.argmax(q)
         return act+1
@@ -169,7 +172,7 @@ class DQNAgent:
             else:
                 ystate = Variable(torch.from_numpy(state[:1]))
                 nstate = Variable(torch.from_numpy(n_state[:1]))
-            target = self.Y_model.forward(ystate).data.numpy()[0]
+            target = self.Y_model.forward(ystate).cpu().data.numpy()[0]
             action = int(action)-1
             # target = np.zeros(self.action_size)
             if terminal:
@@ -193,13 +196,13 @@ class DQNAgent:
             update_target=Variable(torch.from_numpy(update_target))
         prediction=self.Y_model.forward(update_input)
         loss = loss_func(prediction,update_target)
-        print(np.mean(loss.data.numpy()))
+        print(np.mean(loss.cpu().data.numpy()))
         self.Y_optimizer.zero_grad()
         loss.backward()
         self.Y_optimizer.step()
         return np.mean(update_target.data.numpy())
 
-    def train_D_model(self,batchMem):
+    def train_D_model(self,batchMem):#todo cuda capablity
         batch_size = self.batch_size
         memsize=len(batchMem)
         shape=[memsize,]
