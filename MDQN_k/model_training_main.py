@@ -23,8 +23,8 @@ def main():
     qds=[]
     for k in range(50):
         for j in range(10):
-            # for i in range(0,len(qagent.memory),qagent.batch_size):
-            qy,qd=qagent.memory_replay()
+            for i in range(0,len(qagent.memory),qagent.batch_size):
+                qy,qd=qagent.memory_replay()
         qagent.update_target_model()
         qys.append(qy)
         qds.append(qd)
