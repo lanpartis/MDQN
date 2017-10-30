@@ -41,7 +41,7 @@ class DQN(nn.Module):
             nn.MaxPool2d(p_s,p_s),
         )
         self.L1 = nn.Linear(n_s[2]*fsl*fsl,n_s[3])
-        self.drop = nn.Dropout(p=0.1)
+        self.drop = nn.Dropout(p=0.05)
         self.out = nn.Linear(n_s[3],output_shape)
 
     def forward(self,x):
