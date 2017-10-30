@@ -41,6 +41,7 @@ class DQN(nn.Module):
             nn.MaxPool2d(p_s,p_s),
         )
         self.L1 = nn.Linear(n_s[2]*fsl*fsl,n_s[3])
+        self.drop = nn.Dropout(p=0.1)
         self.out = nn.Linear(n_s[3],output_shape)
 
     def forward(self,x):
@@ -49,6 +50,7 @@ class DQN(nn.Module):
         x = self.conv3(x)
         x = x.view(x.size(0),-1)
         x = F.relu(self.L1(x))
+        x = self.drop(x)
         return self.out(x)
 
 
