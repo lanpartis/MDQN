@@ -3,7 +3,7 @@ import numpy as np
 import socket
 import sys
 import time
-t_steps = 40
+t_steps = 100
 host ='localhost'
 port=12375
 actiong_dict={1:"wait",2:"look toward human",3:"hello",4:"shake hand",9:"start"}
@@ -29,7 +29,7 @@ def main():
     epi_file=open('../files/episode.txt')
     episode = epi_file.readline()
     episode = int(episode)
-    qagent=DQNAgent(3)
+    qagent=DQNAgent(14)
     data = 'x'
     while(data!='9'):
         data = send_action(9)
