@@ -21,10 +21,11 @@ def main():
     qagent.load_memory_of_episode(episode)
     qys=[]
     qds=[]
-    for k in range(10):
-        for j in range(20):
+    for k in range(50):
+        for j in range(10):
             for i in range(0,len(qagent.memory),qagent.batch_size):
-                qy,qd=qagent.memory_replay()
+                qy,qd,yloss=qagent.memory_replay()
+            print("Iteration %d-%d loss:%f"%(k,j,yloss))
         qagent.update_target_model()
         qys.append(qy)
         qds.append(qd)

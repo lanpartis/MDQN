@@ -41,7 +41,7 @@ class DQN(nn.Module):
             nn.MaxPool2d(p_s,p_s),
         )
         self.L1 = nn.Linear(n_s[2]*fsl*fsl,n_s[3])
-        self.drop = nn.Dropout(p=0.5)
+        # self.drop = nn.Dropout(p=0.5)
         self.out = nn.Linear(n_s[3],output_shape)
 
     def forward(self,x):
@@ -50,7 +50,7 @@ class DQN(nn.Module):
         x = self.conv3(x)
         x = x.view(x.size(0),-1)
         x = F.relu(self.L1(x))
-        x = self.drop(x)
+        # x = self.drop(x)
         return self.out(x)
 
 
@@ -153,10 +153,10 @@ class DQNAgent:
     def memory_replay(self):
         # batch = min(len(self.memory),self.batch_size)
         # mini_batch = random.sample(list(self.memory),batch)
-        qy=self.train_Y_model(self.sample_memory())
+        qy,yloss=self.train_Y_model(self.sample_memory())
         # qd=self.train_D_model(mini_batch)
         qd=0
-        return qy,qd
+        return qy,qd,yloss
 
     def sample_memory(self):
         return random.sample(self.memory,self.batch_size)
@@ -200,11 +200,11 @@ class DQNAgent:
             update_target=Variable(torch.from_numpy(update_target))
         prediction=self.Y_model.forward(update_input)
         loss = loss_func(prediction,update_target)
-        print(np.mean(loss.cpu().data.numpy()))
+
         self.Y_optimizer.zero_grad()
         loss.backward()
         self.Y_optimizer.step()
-        return np.mean(update_target.cpu().data.numpy())
+        return np.mean(update_target.cpu().data.numpy()),np.mean(loss.cpu().data.numpy())
 
     def train_D_model(self,batchMem):#todo cuda capablity
         batch_size = self.batch_size
