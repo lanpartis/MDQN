@@ -64,7 +64,7 @@ class DQNAgent:
     ep_reward_file=memory_path+'ep_reward.dat'
     batch_size = 25
     epsilon = 1
-    epsilon_decay = 0.99
+    epsilon_decay = 0.7
     epsilon_final = 0.1
     epsilon_endtime = 30000
     action_size = 4

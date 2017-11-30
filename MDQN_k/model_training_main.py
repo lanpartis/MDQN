@@ -17,7 +17,7 @@ def main():
     episode = epi_file.readline()
     epi_file.close()
     episode = int(episode)-1
-    qagent = DQNAgent(0)#episode-1)
+    qagent = DQNAgent(episode-1)
     qagent.load_memory_of_episode(episode)
     qys=[]
     qds=[]

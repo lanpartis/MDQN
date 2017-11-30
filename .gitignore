@@ -6,3 +6,6 @@ episode.txt
 avg_Q.txt
 *.ipynb
 *.pkl
+*.idea
+*.zip
+.DS_store
