@@ -292,6 +292,7 @@ class DQNAgent:
                 next_state=np.concatenate((y_,d_),axis=0)
                 terminal=False
             r = reward[episode-1][step]
+            print('raw reward:',r)
             if(r>3):
                 r = 1
             elif (r<0):
