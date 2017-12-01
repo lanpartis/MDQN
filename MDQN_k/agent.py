@@ -177,6 +177,7 @@ class DQNAgent:
                 ystate = Variable(torch.from_numpy(state[:1]))
                 nstate = Variable(torch.from_numpy(n_state[:1]))
             target = self.Y_model.forward(ystate).cpu().data.numpy()[0]
+            print('target before:',target)
             action = int(action)-1
             # target = np.zeros(self.action_size)
             if terminal:
@@ -185,6 +186,7 @@ class DQNAgent:
                 q_2 =self.target_Y_model.forward(nstate)
                 q_2 = torch.max(q_2).cpu().data.numpy()
                 target[action] = reward + self.discount_factor*q_2
+            print('target after:',target)
             if self.clip_delta:
                 if target[action]> self.clip_delta:
                     target[action] = self.clip_delta
