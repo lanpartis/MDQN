@@ -64,11 +64,11 @@ class DQNAgent:
     ep_reward_file=memory_path+'ep_reward.dat'
     batch_size = 25
     epsilon = 1
-    epsilon_decay = 0.7
+    epsilon_decay = 0.99
     epsilon_final = 0.1
     epsilon_endtime = 30000
     action_size = 4
-    discount_factor = 0.99
+    discount_factor = 0.7
     n_replay = 1 #replay per learning step
     learn_start = 3000
     replay_memory = 30000
@@ -79,8 +79,8 @@ class DQNAgent:
         if episode==0:
             self.Y_model = self.build_model()
             self.target_Y_model = self.build_model()
-            self.D_model = self.build_model()
-            self.target_D_model = self.build_model()
+            # self.D_model = self.build_model()
+            # self.target_D_model = self.build_model()
         else:
             self.load_model(episode)
         self.Y_model.double()
@@ -260,7 +260,7 @@ class DQNAgent:
         episode=str(episode)
         if cuda:
             torch.save(self.Y_model,self.Y_model_path+episode+'_gpu.pkl')
-            torch.save(self.D_model,self.D_model_path+episode+'_gpu.pkl')
+            # torch.save(self.D_model,self.D_model_path+episode+'_gpu.pkl')
         torch.save(self.Y_model.cpu(),self.Y_model_path+episode+'.pkl')
 
     def save_memory(self):
