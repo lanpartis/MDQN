@@ -177,7 +177,7 @@ class DQNAgent:
                 ystate = Variable(torch.from_numpy(state[:1]))
                 nstate = Variable(torch.from_numpy(n_state[:1]))
             target = self.Y_model.forward(ystate).cpu().data.numpy()[0]
-
+            print('action: ',action,' reward: ',reward )
             print('target before:',target)
             action = int(action)-1
             # target = np.zeros(self.action_size)
