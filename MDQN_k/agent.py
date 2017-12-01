@@ -73,7 +73,7 @@ class DQNAgent:
     learn_start = 3000
     replay_memory = 30000
     memory = deque(maxlen=replay_memory)
-    clip_delta = 1
+    clip_delta = 0
 
     def __init__(self,episode=0):
         if episode==0:
