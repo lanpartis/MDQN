@@ -23,7 +23,7 @@ def main():
     qds=[]
     total4=0
     correct4=0
-    for k in range(5):
+    for k in range(1):
         for j in range(2):
             for i in range(0,len(qagent.memory),qagent.batch_size):
                 qy,qd,yloss,t4,c4=qagent.memory_replay()
