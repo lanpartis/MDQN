@@ -187,6 +187,7 @@ class DQNAgent:
                 q_2 =self.target_Y_model.forward(nstate)
                 q_2 = torch.max(q_2).cpu().data.numpy()
                 target[action] = reward + self.discount_factor*q_2
+            print('max Q_n:'q_2)
             print('target after:',target)
             if self.clip_delta:
                 if target[action]> self.clip_delta:
@@ -293,6 +294,7 @@ class DQNAgent:
             r = reward[episode-1][step]
             if(r>3):
                 r = 1
+                # terminal = True
             elif (r<0):
                 r = -0.1
             else:
