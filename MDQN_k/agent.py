@@ -138,13 +138,13 @@ class DQNAgent:
         # for step in range(0,steps):
         for i in range(1,r_len+1):
             y_image_path = path+'/RGB/ep'+str(episode)+'/image_' + str(step+1) + '_' + str(i) + '.png'
-            d_image_path = path+'/Depth/ep'+str(episode)+'/depth_' + str(step+1) +'_' + str(i) +'.png'
+            # d_image_path = path+'/Depth/ep'+str(episode)+'/depth_' + str(step+1) +'_' + str(i) +'.png'
             y_image = image.imread(y_image_path)
-            d_image = image.imread(d_image_path)
+            # d_image = image.imread(d_image_path)
             y_image = transform.resize(y_image,(198,198),mode='reflect')
-            d_image = transform.resize(d_image,(198,198),mode='reflect')
+            # d_image = transform.resize(d_image,(198,198),mode='reflect')
             images[0,i-1,:,:]=y_image
-            depths[0,i-1,:,:]=d_image
+            # depths[0,i-1,:,:]=d_image
         return images,depths
 
     def memorize(self,state,action,reward,n_state):
