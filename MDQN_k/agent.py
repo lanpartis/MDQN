@@ -186,7 +186,7 @@ class DQNAgent:
             else:
                 q_2 =self.target_Y_model.forward(nstate)
                 q_2_max = torch.max(q_2).cpu().data.numpy()
-                target[action] = reward + self.discount_factor*q_2
+                target[action] = reward + self.discount_factor*q_2_max
             print('Q_n:',q_2)
             print('max Q_n:',q_2_max)
             print('target after:',target)
