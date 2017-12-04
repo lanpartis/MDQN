@@ -185,7 +185,7 @@ class DQNAgent:
                 total4+=1
                 if np.argmax(target) ==3 and reward ==1:
                     correct4+=1
-                elif np.argmax(target) ！=3 and reward ==-0.1:
+                elif np.argmax(target) !=3 and reward ==-0.1:
                     correct4+=1
             action = int(action)-1
             # target = np.zeros(self.action_size)
