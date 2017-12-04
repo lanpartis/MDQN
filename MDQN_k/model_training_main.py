@@ -21,14 +21,18 @@ def main():
     qagent.load_memory_of_episode(episode)
     qys=[]
     qds=[]
+    total4=0
+    correct4=0
     for k in range(5):
         for j in range(2):
             for i in range(0,len(qagent.memory),qagent.batch_size):
-                qy,qd,yloss=qagent.memory_replay()
+                qy,qd,yloss,t4,c4=qagent.memory_replay()
             print("Iteration %d-%d loss:%f"%(k,j,yloss))
         qagent.update_target_model()
         qys.append(qy)
         qds.append(qd)
+        total4+=t4
+        correct4+=c4
     qagent.save_model(episode)
     res = time.strftime('%Y/%m/%d-%H:%M:%S',time.localtime(time.time()))+"Average of episode: %d Q_y: %f Q_d: %f"%(episode,np.mean(qys),np.mean(qds))
     epi_file=open('../files/avg_Q.txt','a')

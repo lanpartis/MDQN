@@ -153,10 +153,10 @@ class DQNAgent:
     def memory_replay(self):
         # batch = min(len(self.memory),self.batch_size)
         # mini_batch = random.sample(list(self.memory),batch)
-        qy,yloss=self.train_Y_model(self.sample_memory())
+        qy,yloss,t4,c4=self.train_Y_model(self.sample_memory())
         # qd=self.train_D_model(mini_batch)
         qd=0
-        return qy,qd,yloss
+        return qy,qd,yloss,t4,c4
 
     def sample_memory(self):
         return random.sample(self.memory,self.batch_size)
@@ -168,6 +168,8 @@ class DQNAgent:
         shape.extend(input_shape)
         update_input = np.zeros(shape)
         update_target = np.zeros((memsize, self.action_size))
+        total4 =0
+        correct4=0
         for i in range(memsize):
             state,action,reward,n_state,terminal = batchMem[i]
             if cuda:
@@ -179,6 +181,12 @@ class DQNAgent:
             target = self.Y_model.forward(ystate).cpu().data.numpy()[0]
             print('action: ',action,' reward: ',reward )
             print('target before:',target)
+            if action==4 :
+                total4+=1
+                if np.argmax(target) ==3 and reward ==1:
+                    correct4+=1
+                else if np.argmax(target) ！=3 and reward ==-0.1:
+                    correct4+=1
             action = int(action)-1
             # target = np.zeros(self.action_size)
             if terminal:
@@ -209,7 +217,7 @@ class DQNAgent:
         self.Y_optimizer.zero_grad()
         loss.backward()
         self.Y_optimizer.step()
-        return np.mean(update_target.cpu().data.numpy()),np.mean(loss.cpu().data.numpy())
+        return np.mean(update_target.cpu().data.numpy()),np.mean(loss.cpu().data.numpy()),total4,correct4
 
     def train_D_model(self,batchMem):#todo cuda capablity
         batch_size = self.batch_size
