@@ -198,11 +198,7 @@ class DQNAgent:
                 print('Q_n:',q_2.cpu().data.numpy())
                 print('max Q_n:',q_2_max)
             print('target after:',target)
-            if self.clip_delta:
-                if target[action]> self.clip_delta:
-                    target[action] = self.clip_delta
-                elif target[action] < -self.clip_delta:
-                    target[action] = -self.clip_delta
+
             update_input[i]=state[0]
             update_target[i] = target
         if cuda:
@@ -216,6 +212,8 @@ class DQNAgent:
 
         self.Y_optimizer.zero_grad()
         loss.backward()
+        if self.clip_delta:
+            nn.utils.clip_grad_norm(self.Y_model.parameters(),self.clip_delta)
         self.Y_optimizer.step()
         return np.mean(update_target.cpu().data.numpy()),np.mean(loss.cpu().data.numpy()),total4,correct4
 
