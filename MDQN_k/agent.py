@@ -301,7 +301,7 @@ class DQNAgent:
             r = reward[episode-1][step]
             if(r>3):
                 r = 1
-                terminal = True
+                # terminal = True
             elif (r<0):
                 r = -0.1
             else:
