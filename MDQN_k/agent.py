@@ -307,7 +307,7 @@ class DQNAgent:
             else:
                 r = 0
             self.memorize(state,action[episode-1][step],r,next_state,terminal)
-            if step+1 %10 == 20:
+            if (step+1) %20 == 0:
                 debug_print('memory of episode %d step %d loaded'%(episode,step+1))
 
 
