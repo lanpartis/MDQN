@@ -307,7 +307,8 @@ class DQNAgent:
             else:
                 r = 0
             self.memorize(state,action[episode-1][step],r,next_state,terminal)
-            debug_print('memory of episode %d step %d loaded'%(episode,step+1))
+            if step+1 %10 == 20:
+                debug_print('memory of episode %d step %d loaded'%(episode,step+1))
 
 
 def read_dat_file(path):
