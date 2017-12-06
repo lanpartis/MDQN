@@ -179,8 +179,8 @@ class DQNAgent:
                 ystate = Variable(torch.from_numpy(state[:1]))
                 nstate = Variable(torch.from_numpy(n_state[:1]))
             target = self.Y_model.forward(ystate).cpu().data.numpy()[0]
-            # print('action: ',action,' reward: ',reward )
-            # print('target before:',target)
+            print('action: ',action,' reward: ',reward )
+            print('target before:',target)
             if action==4 :
                 total4+=1
                 if np.argmax(target) ==3 and reward ==1:
@@ -195,9 +195,9 @@ class DQNAgent:
                 q_2 =self.target_Y_model.forward(nstate)
                 q_2_max = torch.max(q_2).cpu().data.numpy()
                 target[action] = reward + self.discount_factor*q_2_max
-            #     print('Q_n:',q_2.cpu().data.numpy())
-            #     print('max Q_n:',q_2_max)
-            # print('target after:',target)
+                print('Q_n:',q_2.cpu().data.numpy())
+                print('max Q_n:',q_2_max)
+            print('target after:',target)
 
             update_input[i]=state[0]
             update_target[i] = target
