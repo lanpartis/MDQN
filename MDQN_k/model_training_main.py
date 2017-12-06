@@ -35,7 +35,11 @@ def main():
             total4+=t4
             correct4+=c4
     qagent.save_model(episode)
-    res = time.strftime('%Y/%m/%d-%H:%M:%S',time.localtime(time.time()))+"Average of episode: %d Q_y: %f Q_d: %f,correct shake: %f"%(episode,np.mean(qys),np.mean(qds),correct4/total4)
+    if total4==0:
+        res=0
+    else:
+        res = correct4/total4
+    res = time.strftime('%Y/%m/%d-%H:%M:%S',time.localtime(time.time()))+"Average of episode: %d Q_y: %f Q_d: %f,correct shake: %f"%(episode,np.mean(qys),np.mean(qds),res)
     epi_file=open('../files/avg_Q.txt','a')
     epi_file.write(res+'\n')
     epi_file.close()
