@@ -197,7 +197,7 @@ class DQNAgent:
                 target[action] = reward + self.discount_factor*q_2_max
                 # print('Q_n:',q_2.cpu().data.numpy())
                 # print('max Q_n:',q_2_max)
-            print('target aftesr:',target)
+            # print('target after:',target)
 
             update_input[i]=state[0]
             update_target[i] = target
@@ -301,7 +301,7 @@ class DQNAgent:
             r = reward[episode-1][step]
             if(r>3):
                 r = 1
-                # terminal = True
+                terminal = True
             elif (r<0):
                 r = -0.1
             else:
