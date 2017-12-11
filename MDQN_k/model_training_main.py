@@ -31,7 +31,7 @@ def main():
                     qy,qd,yloss=qagent.memory_replay()
                 print("Iteration %d-%d loss:%f"%(k,j,yloss))
                 loss_file=open('../files/loss.txt','a')
-                loss_file.write(str(j)+'\n')
+                loss_file.write(str(yloss)+'\n')
                 loss_file.close()
             qagent.update_target_model()
             qys.append(qy)
