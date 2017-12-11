@@ -25,8 +25,8 @@ def main():
     if episode != 9:
         qagent.load_memory_of_episode(episode)
         res_before = qagent.evalutate_4()
-        for k in range(1):
-            for j in range(1):
+        for k in range(50):
+            for j in range(10):
                 for i in range(0,len(qagent.memory),qagent.batch_size):
                     qy,qd,yloss=qagent.memory_replay()
                 print("Iteration %d-%d loss:%f"%(k,j,yloss))
