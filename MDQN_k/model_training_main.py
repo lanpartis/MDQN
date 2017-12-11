@@ -20,26 +20,20 @@ def main():
     qagent = DQNAgent(episode-1)
     qys=[]
     qds=[]
-    total4=0
-    correct4=0
+    res_before = qagent.evalutate_4()
     if episode != 9:
         qagent.load_memory_of_episode(episode)
         for k in range(50):
             for j in range(10):
                 for i in range(0,len(qagent.memory),qagent.batch_size):
-                    qy,qd,yloss,t4,c4=qagent.memory_replay()
+                    qy,qd,yloss=qagent.memory_replay()
                 print("Iteration %d-%d loss:%f"%(k,j,yloss))
             qagent.update_target_model()
             qys.append(qy)
             qds.append(qd)
-            total4+=t4
-            correct4+=c4
     qagent.save_model(episode)
-    if total4==0:
-        res=0
-    else:
-        res = correct4/total4
-    res = time.strftime('%Y/%m/%d-%H:%M:%S',time.localtime(time.time()))+"Average of episode: %d Q_y: %f Q_d: %f,correct shake: %f"%(episode,np.mean(qys),np.mean(qds),res)
+    res_after=qagent.evalutate_4()
+    res = time.strftime('%Y/%m/%d-%H:%M:%S',time.localtime(time.time()))+"Average of episode: %d Q_y: %f Q_d: %f,accuracy before: %f,accuracy after: %f"%(episode,np.mean(qys),np.mean(qds),res_before,res_after)
     epi_file=open('../files/avg_Q.txt','a')
     epi_file.write(res+'\n')
     epi_file.close()

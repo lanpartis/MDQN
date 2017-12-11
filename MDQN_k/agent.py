@@ -153,13 +153,33 @@ class DQNAgent:
     def memory_replay(self):
         # batch = min(len(self.memory),self.batch_size)
         # mini_batch = random.sample(list(self.memory),batch)
-        qy,yloss,t4,c4=self.train_Y_model(self.sample_memory())
+        qy,yloss=self.train_Y_model(self.sample_memory())
         # qd=self.train_D_model(mini_batch)
         qd=0
-        return qy,qd,yloss,t4,c4
+        return qy,qd,yloss
 
     def sample_memory(self):
         return random.sample(self.memory,self.batch_size)
+
+    def evalutate_4(self):
+        total4=0
+        correct4=0
+        for i in self.memory:
+            state,action,reward,n_state,terminal = i
+            if cuda:
+                ystate = Variable(torch.from_numpy(state[:1]).cuda())
+                nstate = Variable(torch.from_numpy(n_state[:1]).cuda())
+            else:
+                ystate = Variable(torch.from_numpy(state[:1]))
+                nstate = Variable(torch.from_numpy(n_state[:1]))
+            target = self.target_Y_model.forward(ystate).cpu().data.numpy()[0]
+            if action==4 :
+                total4+=1
+                if np.argmax(target) ==3 and reward ==1:
+                    correct4+=1
+                elif np.argmax(target) !=3 and reward ==-0.1:
+                    correct4+=1
+        return correct4/total4
 
     def train_Y_model(self,batchMem):
         memsize=len(batchMem)
@@ -181,12 +201,12 @@ class DQNAgent:
             target = self.Y_model.forward(ystate).cpu().data.numpy()[0]
             # print('action: ',action,' reward: ',reward )
             # print('target before:',target)
-            if action==4 :
-                total4+=1
-                if np.argmax(target) ==3 and reward ==1:
-                    correct4+=1
-                elif np.argmax(target) !=3 and reward ==-0.1:
-                    correct4+=1
+            # if action==4 :
+            #     total4+=1
+            #     if np.argmax(target) ==3 and reward ==1:
+            #         correct4+=1
+            #     elif np.argmax(target) !=3 and reward ==-0.1:
+            #         correct4+=1
             action = int(action)-1
             # target = np.zeros(self.action_size)
             if terminal:
@@ -215,7 +235,7 @@ class DQNAgent:
         if self.clip_delta:
             nn.utils.clip_grad_norm(self.Y_model.parameters(),self.clip_delta)
         self.Y_optimizer.step()
-        return np.mean(update_target.cpu().data.numpy()),np.mean(loss.cpu().data.numpy()),total4,correct4
+        return np.mean(update_target.cpu().data.numpy()),np.mean(loss.cpu().data.numpy()) #,total4,correct4
 
     def train_D_model(self,batchMem):#todo cuda capablity
         batch_size = self.batch_size
