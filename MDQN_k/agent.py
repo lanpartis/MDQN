@@ -68,7 +68,7 @@ class DQNAgent:
     epsilon_final = 0.1
     epsilon_endtime = 30000
     action_size = 4
-    discount_factor = 0.9
+    discount_factor = 0.7
     n_replay = 1 #replay per learning step
     learn_start = 3000
     replay_memory = 30000
