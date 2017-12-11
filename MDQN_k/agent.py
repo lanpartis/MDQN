@@ -179,6 +179,8 @@ class DQNAgent:
                     correct4+=1
                 elif np.argmax(target) !=3 and reward ==-0.1:
                     correct4+=1
+        if total4 ==0:
+            return -1
         return correct4/total4
 
     def train_Y_model(self,batchMem):
