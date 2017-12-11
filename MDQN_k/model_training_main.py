@@ -25,11 +25,14 @@ def main():
     if episode != 9:
         qagent.load_memory_of_episode(episode)
         res_before = qagent.evalutate_4()
-        for k in range(50):
-            for j in range(10):
+        for k in range(1):
+            for j in range(1):
                 for i in range(0,len(qagent.memory),qagent.batch_size):
                     qy,qd,yloss=qagent.memory_replay()
                 print("Iteration %d-%d loss:%f"%(k,j,yloss))
+                loss_file=open('../files/loss.txt','a')
+                loss_file.write(str(j)+'\n')
+                loss_file.close()
             qagent.update_target_model()
             qys.append(qy)
             qds.append(qd)
@@ -40,6 +43,8 @@ def main():
     epi_file=open('../files/avg_Q.txt','a')
     epi_file.write(res+'\n')
     epi_file.close()
+
+
 
     if forward:
         epi_file=open('../files/episode.txt','w')
