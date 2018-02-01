@@ -30,6 +30,7 @@ def main():
     episode = epi_file.readline()
     episode = int(episode)
     qagent=DQNAgent(14)
+    qagent.mo
     data = 'x'
     while(data!='9'):
         data = send_action(9)

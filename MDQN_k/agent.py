@@ -27,16 +27,20 @@ class DQN(nn.Module):
         super(DQN,self).__init__()
         self.conv1 = nn.Sequential(
             nn.Conv2d(r_len,n_s[0],kernel_size=fil_size[0],stride = st[0]),
+            nn.BatchNorm2d(fil_size[0]),
             nn.ReLU(),
             nn.MaxPool2d(p_s,p_s),
         )
+
         self.conv2 =nn.Sequential(
             nn.Conv2d(n_s[0],n_s[1],kernel_size=fil_size[1],stride = st[1]),
+            nn.BatchNorm2d(fil_size[1]),
             nn.ReLU(),
             nn.MaxPool2d(p_s,p_s),
         )
         self.conv3 =nn.Sequential(
             nn.Conv2d(n_s[1],n_s[2],kernel_size=fil_size[1],stride = st[1]),
+            nn.BatchNorm2d(fil_size[2]),
             nn.ReLU(),
             nn.MaxPool2d(p_s,p_s),
         )
@@ -73,7 +77,7 @@ class DQNAgent:
     learn_start = 3000
     replay_memory = 30000
     memory = deque(maxlen=replay_memory)
-    clip_delta = 0
+    clip_delta = 1
 
     def __init__(self,episode=0):
         if episode==0:
@@ -92,7 +96,7 @@ class DQNAgent:
             self.target_Y_model.cuda()
             # self.D_model.cuda()
             # self.target_D_model.cuda()
-        self.Y_optimizer = torch.optim.RMSprop(self.Y_model.parameters(),1e-4)
+        self.Y_optimizer = torch.optim.Adam(self.Y_model.parameters(),1e-4)
         # self.D_optimizer = torch.optim.RMSprop(self.D_model.parameters(),1e-4)
 
 
@@ -201,14 +205,7 @@ class DQNAgent:
                 ystate = Variable(torch.from_numpy(state[:1]))
                 nstate = Variable(torch.from_numpy(n_state[:1]))
             target = self.Y_model.forward(ystate).cpu().data.numpy()[0]
-            # print('action: ',action,' reward: ',reward )
-            # print('target before:',target)
-            # if action==4 :
-            #     total4+=1
-            #     if np.argmax(target) ==3 and reward ==1:
-            #         correct4+=1
-            #     elif np.argmax(target) !=3 and reward ==-0.1:
-            #         correct4+=1
+
             action = int(action)-1
             # target = np.zeros(self.action_size)
             if terminal:
@@ -217,9 +214,7 @@ class DQNAgent:
                 q_2 =self.target_Y_model.forward(nstate)
                 q_2_max = torch.max(q_2).cpu().data.numpy()
                 target[action] = reward + self.discount_factor*q_2_max
-                # print('Q_n:',q_2.cpu().data.numpy())
-                # print('max Q_n:',q_2_max)
-            # print('target after:',target)
+
 
             update_input[i]=state[0]
             update_target[i] = target
@@ -234,8 +229,8 @@ class DQNAgent:
 
         self.Y_optimizer.zero_grad()
         loss.backward()
-        if self.clip_delta:
-            nn.utils.clip_grad_norm(self.Y_model.parameters(),self.clip_delta)
+        for param in self.Y_model.parameters():
+            param.grad.data.clamp_(-1,1)
         self.Y_optimizer.step()
         return np.mean(update_target.cpu().data.numpy()),np.mean(loss.cpu().data.numpy()) #,total4,correct4
 
