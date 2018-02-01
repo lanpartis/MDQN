@@ -27,20 +27,20 @@ class DQN(nn.Module):
         super(DQN,self).__init__()
         self.conv1 = nn.Sequential(
             nn.Conv2d(r_len,n_s[0],kernel_size=fil_size[0],stride = st[0]),
-            nn.BatchNorm2d(fil_size[0]),
+            nn.BatchNorm2d(n_s[0]),
             nn.ReLU(),
             nn.MaxPool2d(p_s,p_s),
         )
 
         self.conv2 =nn.Sequential(
             nn.Conv2d(n_s[0],n_s[1],kernel_size=fil_size[1],stride = st[1]),
-            nn.BatchNorm2d(fil_size[1]),
+            nn.BatchNorm2d(n_s[1]),
             nn.ReLU(),
             nn.MaxPool2d(p_s,p_s),
         )
         self.conv3 =nn.Sequential(
             nn.Conv2d(n_s[1],n_s[2],kernel_size=fil_size[1],stride = st[1]),
-            nn.BatchNorm2d(fil_size[1]),
+            nn.BatchNorm2d(n_s[2]),
             nn.ReLU(),
             nn.MaxPool2d(p_s,p_s),
         )
