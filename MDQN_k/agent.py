@@ -27,20 +27,20 @@ class DQN(nn.Module):
         super(DQN,self).__init__()
         self.conv1 = nn.Sequential(
             nn.Conv2d(r_len,n_s[0],kernel_size=fil_size[0],stride = st[0]),
-            nn.BatchNorm2d(n_s[0]),
+            # nn.BatchNorm2d(n_s[0]),
             nn.ReLU(),
             nn.MaxPool2d(p_s,p_s),
         )
 
         self.conv2 =nn.Sequential(
             nn.Conv2d(n_s[0],n_s[1],kernel_size=fil_size[1],stride = st[1]),
-            nn.BatchNorm2d(n_s[1]),
+            # nn.BatchNorm2d(n_s[1]),
             nn.ReLU(),
             nn.MaxPool2d(p_s,p_s),
         )
         self.conv3 =nn.Sequential(
             nn.Conv2d(n_s[1],n_s[2],kernel_size=fil_size[1],stride = st[1]),
-            nn.BatchNorm2d(n_s[2]),
+            # nn.BatchNorm2d(n_s[2]),
             nn.ReLU(),
             nn.MaxPool2d(p_s,p_s),
         )
@@ -96,7 +96,7 @@ class DQNAgent:
             self.target_Y_model.cuda()
             # self.D_model.cuda()
             # self.target_D_model.cuda()
-        self.Y_optimizer = torch.optim.Adam(self.Y_model.parameters(),1e-4)
+        self.Y_optimizer = torch.optim.RMSprop(self.Y_model.parameters(),1e-4)
         # self.D_optimizer = torch.optim.RMSprop(self.D_model.parameters(),1e-4)
 
 
@@ -215,8 +215,7 @@ class DQNAgent:
                 q_2_max = torch.max(q_2).cpu().data.numpy()
                 target[action] = reward + self.discount_factor*q_2_max
 
-
-            update_input[i]=state[0]
+            update_input[i] = state[0]
             update_target[i] = target
         if cuda:
             update_input=Variable(torch.from_numpy(update_input).cuda())
